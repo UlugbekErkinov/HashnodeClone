@@ -1,1 +1,1 @@
-# CLC-boilerplate
+# Hashnode using Django, Drf.
