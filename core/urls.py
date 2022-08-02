@@ -23,7 +23,7 @@ urlpatterns = [
     path('admin/', admin.site.urls),
     path('api/v1/', include('feed.urls')),
     re_path(r'^froala_editor/', include('froala_editor.urls')),
-    path(r'^__debug__/', include(debug_toolbar.urls)),
+    re_path(r'^__debug__/', include(debug_toolbar.urls)),
 
 ] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
   

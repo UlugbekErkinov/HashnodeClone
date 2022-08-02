@@ -12,6 +12,7 @@ from django.db.models import Q
 from django.utils import timezone
 from django.core.paginator import Paginator
 from itertools import chain
+from django.db.models import Count
 import re
 from rest_framework import generics
 
@@ -25,22 +26,20 @@ from author.models import Author
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
 from rest_framework.views import APIView
+from datetime import datetime, timedelta
 
 # Create your views here.
 
 
 class IndexView(generics.ListAPIView):
-    template_name = 'hashnode/index.html'
-    context_object_name = 'posts_list'
-    paginate_by = 10
     serializer_class = PostSerializer
     permission_class = [IsAuthenticated, ]
 
-    def get_queryset(self):
-        return Post.objects.filter(published_date__lte=timezone.now()).order_by('-published_date')
+    def get_queryset(self, request):
+        tags = request.query_params.get('tags', None)
+        return Post.objects.filter(personalize = 'personalized', recent=timezone.now(), is_featured='is_featured', ).order_by('-published_date')
 
     def get_context_data(self, **kwargs):
-
         context = super().get_context_data(**kwargs)
         if self.request.user.is_authenticated:
             posts = self.request.user.profile.followed_posts()
@@ -50,19 +49,20 @@ class IndexView(generics.ListAPIView):
 
 
 class TagsListView(generics.RetrieveAPIView):
-    template_name = 'hashnode/tag_list.html'
-    context_object_name = 'posts_list'
-    queryset = Post.objects.all()
-    serializer_class = PostSerializer
+   
+    queryset = Tag.objects.all()
+    serializer_class = TagSerializer
     permission_class = [IsAuthenticated, ]
+
+    tags = Tag.objects.annotate(
+        total_tags=Count('tags')
+    ).order_by('-total_tags')
 
     # def get_queryset(self):
     #     return Post.objects.filter(tags__name__in=[self.kwargs['posts']])
 
 
 class DraftsListView(generics.ListAPIView):
-    template_name = 'hashnode/drafts.html'
-    context_object_name = 'posts_list'
     serializer_class = PostSerializer
     permission_class = [IsAuthenticated, ]
 
@@ -71,9 +71,6 @@ class DraftsListView(generics.ListAPIView):
 
 
 class SearchListView(generics.ListAPIView):
-    template_name = 'hashnode/search.html'
-    context_object_name = 'posts_list'
-    paginate_by = 10
     serializer_class = PostSerializer
     permission_class = [IsAuthenticated, ]
     
@@ -91,10 +88,30 @@ class SearchListView(generics.ListAPIView):
         return context
 
 
+
+
+
+class TagsTrendingListView(generics.ListAPIView):
+    serializer_class = PostSerializer
+    permission_class = [IsAuthenticated, ]
+
+    def get_queryset(self):
+        queryset = Tag.objects.prefetch_related('tags').annotate(
+            total_created=Count('tags')).filter(created_at__gte=7)
+        return queryset
+
+class TrendingPostView(generics.ListAPIView):
+    serializer_class = PostSerializer
+    permission_class = [IsAuthenticated, ]
+
+    def get_queryset(self):
+        one_week = datetime.today() - timedelta(days=7)
+        queryset = Post.objects.annotate(
+            total_views=Count('viewers')
+        ).filter(report_by_date__gte=one_week).order_by('-total_views')
+        return queryset
+
 class NewPostView(LoginRequiredMixin, generics.ListCreateAPIView):
-    login_url = '/login/'
-    redirect_field_name = 'hashnode/post.html'
-    template_name = 'hashnode/new_post.html'
     form_class = PostForm
     model = Post
     queryset = Post.objects.order_by('-published_date')
@@ -107,9 +124,6 @@ class NewPostView(LoginRequiredMixin, generics.ListCreateAPIView):
 
 
 class PostDeleteView(LoginRequiredMixin, generics.DestroyAPIView):
-    login_url = '/login/'
-    model = Post
-    success_url = reverse_lazy('hashnode:index')
     serializer_class = PostSerializer
     permission_class = [IsAuthenticated, ]
 
@@ -117,7 +131,7 @@ class PostDeleteView(LoginRequiredMixin, generics.DestroyAPIView):
 class PostDetailView(generics.RetrieveAPIView):
     model = Post
     queryset = Post.objects.all()
-    template_name = 'hashnode/post.html'
+  
     serializer_class = PostSerializer
     permission_class = [IsAuthenticated, ]
 
@@ -129,22 +143,23 @@ class PostDetailView(generics.RetrieveAPIView):
 
 
 class ProfileDetailView(generics.RetrieveAPIView):
-    model = Author
-    context_object_name = 'hashnode_user'
-    template_name = 'hashnode/profile.html'
+    
     queryset = Author.objects.all()
     serializer_class = AuthorSerializer
     permission_class = [IsAuthenticated, ]
 
 
 class PostEditView(LoginRequiredMixin, generics.UpdateAPIView):
-    login_url = '/login/'
-    redirect_field_name = 'hashnode/post.html'
-    template_name = 'hashnode/new_post.html'
     form_class = PostForm
     model = Post
     queryset = Post.objects.all()[:1]
     serializer_class = PostSerializer
+
+
+class BookMarkListView(LoginRequiredMixin, generics.ListAPIView):
+    queryset = Bookmark.objects.all()
+    serializer_class = BookmarkSerializer
+
    
 
 

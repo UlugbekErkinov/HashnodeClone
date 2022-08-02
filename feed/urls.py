@@ -17,6 +17,7 @@ urlpatterns = [
     path('unfollow/tag/<tag>', views.unfollow_tag, name='unfollow_tag'),
 
     path('post/<int:pk>/', views.PostDetailView.as_view(), name='post'),
+    path('post/trending', views.TrendingPostView.as_view(), name='trending_blogs'),
     path('search/', views.SearchListView.as_view(), name='search'),
     path('post/<int:pk>/edit/', views.PostEditView.as_view(), name='post_edit'),
     path('post/<int:pk>/cheer/', views.add_emoji, name='add_emoji'),
@@ -26,10 +27,13 @@ urlpatterns = [
     path('post/<int:pk>/comment/', views.add_comment, name='add_comment'),
     path('post/<int:pk>/delete/', views.PostDeleteView.as_view(), name='post_delete'),
     path('tags/<int:pk>', views.TagsListView.as_view(), name='tags'),
+    path('tags/trending', views.TagsTrendingListView.as_view(), name='trending_tags'),
 
     path('post/<int:pk>/comment/delete',
          views.delete_comment, name='delete_comment'),
     path('post/<int:pk>/publish/', views.post_publish, name='post_publish'),
+
+    path('bookmark/', views.BookMarkListView.as_view()),
 
     path('me/edit/', views.profile_edit, name='me_edit'),
     path('me/drafts/', views.DraftsListView.as_view(), name='drafts'),

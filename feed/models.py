@@ -23,11 +23,12 @@ class Post(BaseModel):
         Author, on_delete=models.CASCADE, related_name='posts')
     website_url = models.URLField()
 
-    tags = models.ManyToManyField(Tag, related_name='posts')
+    tags = models.ManyToManyField(Tag, related_name='tags')
 
     published_date = models.DateField(null=True)
     read_min = models.IntegerField(default=0)
     like_count = models.PositiveIntegerField(default=0)
+    viewers = models.PositiveIntegerField(default=0, help_text='viewers')
     is_featured = models.BooleanField(default=False)
     personalized = models.BooleanField(default=False)
     STATUS = Choices(('draft', _('draft')), ('published', _('published')))
