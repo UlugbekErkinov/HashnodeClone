@@ -10,12 +10,12 @@ class Author(BaseModel):
 
 
     bio = models.TextField()
+    email = models.EmailField()
     work_place = models.CharField(max_length=128,null=True)
     linkedin_link = models.CharField(max_length=128)
     instagram_link = models.CharField(max_length=128)
     facebook_link = models.CharField(max_length=128)
     github_link = models.CharField(max_length=128)
-
     posts_count = models.IntegerField(default=0)
     is_top = models.BooleanField(default=False)
 

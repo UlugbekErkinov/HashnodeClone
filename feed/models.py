@@ -37,19 +37,18 @@ class Post(BaseModel):
 class Comment(BaseModel):
     post = models.ForeignKey(
         Post, related_name="comments", on_delete=models.CASCADE)
-    body = models.TextField(max_length=200)
+    content = models.TextField(max_length=200)
     date_added = models.DateTimeField(auto_now_add=True)
     likes = models.ManyToManyField(
         User, related_name="blog_comment", blank=True)
     emoji = models.CharField(max_length=128, default = None, null =True,  unique=True)
-    reply = models.ForeignKey(
-        'self', null=True, related_name="replies", on_delete=models.CASCADE)
+    reply = models.ForeignKey(User, null=True, related_name="replies", on_delete=models.CASCADE)
 
     def total_clicks(self):
         return self.likes.count()
 
     def __str__(self):
-        return '%s - %s - %s' % (self.post.title, self.name, self.id)
+        return '%s - %s - %s' % (self.post.title, self.content, self.id)
 
 
 class Bookmark(BaseModel):
