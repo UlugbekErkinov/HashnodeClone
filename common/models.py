@@ -1,8 +1,10 @@
 
 
 # from django.conf import settings
-from django.contrib.auth.models import AbstractUser
 
+from helpers.models import BaseModel
+from author.models import Author
+from django.contrib.auth.models import AbstractUser
 from django.db import models
 # from django.utils import timezone
 
@@ -36,3 +38,9 @@ class User(AbstractUser):
         swappable = "AUTH_USER_MODEL"
         verbose_name = ("user")
         verbose_name_plural = ("users")
+
+
+
+
+
+
