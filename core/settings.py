@@ -38,6 +38,8 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'rest_framework',
+    'rest_framework.authtoken',
+    'djoser',
     'debug_toolbar',
     'django_extensions',
     'taggit',
@@ -132,6 +134,11 @@ INTERNAL_IPS = [
 
 STATIC_URL = '/static/'
 
+REST_FRAMEWORK = {
+    'DEFAULT_AUTHENTICATION_CLASSES': (
+        'rest_framework.authentication.TokenAuthentication',
+    )
+}
 
 
 # Default primary key field type
@@ -152,4 +159,4 @@ MEDIA_ROOT = os.path.join(BASE_DIR, "mediafiles")
 try:
     from .local_settings import *  # noqa
 except ImportError:
-    pass # noqa
+    pass  # noqa

@@ -22,6 +22,8 @@ import debug_toolbar
 urlpatterns = [
     path('admin/', admin.site.urls),
     path('api/v1/', include('feed.urls')),
+    path('auth/', include('djoser.urls')),
+    path('auth/', include('djoser.urls.authtoken')),
     re_path(r'^froala_editor/', include('froala_editor.urls')),
     re_path(r'^__debug__/', include(debug_toolbar.urls)),
 
